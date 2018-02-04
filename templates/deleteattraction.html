@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tourist Catalog</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+
+    <body>
+        <header>
+            <h1>Tourist Catalog</h1>
+        </header>
+        <section>
+            <h2>Delete {{attraction.name}}</h2>
+            <h3>Are you sure you want to delete {{attraction.name}}</h3>
+            <form action="{{url_for('delete_attraction', attraction_id=attraction.id, country_id=country.id)}}" method="post">
+                <input type="submit" value="Confirm">
+                <br>
+                <a href="{{url_for('show_attraction', country_id=country.id, attraction_id=attraction.id)}}">Cancel</a>
+            </form>
+        </section>
+    </body>
+</html>

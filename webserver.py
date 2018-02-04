@@ -32,7 +32,8 @@ def show_country(country_id):
                            attractions=attractions)
 
 
-@app.route('/countries/<int:country_id>/edit', methods=['GET', 'POST'])
+@app.route('/countries/<int:country_id>/edit/',
+           methods=['GET', 'POST'])
 def edit_country(country_id):
     country = session.query(Country).filter_by(id=country_id).one()
 
@@ -51,6 +52,41 @@ def edit_country(country_id):
     return render_template('editcountry.html', country=country)
 
 
+@app.route('/countries/<int:country_id>/delete/', methods=['GET', 'POST'])
+def delete_country(country_id):
+    country = session.query(Country).filter_by(id=country_id).one()
+
+    if request.method == 'POST':
+        session.query(Attraction).filter_by(
+            country_id=country_id).delete()
+
+        session.delete(country)
+        session.commit()
+
+        return redirect(url_for('home'))
+
+    return render_template('deletecountry.html', country=country)
+
+
+@app.route('/countries/new', methods=['GET', 'POST'])
+def new_country():
+    if request.method == 'POST':
+        inputs = request.form
+        country = Country()
+
+        if inputs['name']:
+            country.name = inputs['name']
+        if inputs['description']:
+            country.description = inputs['description']
+
+        session.add(country)
+        session.commit()
+
+        return redirect(url_for('home'))
+
+    return render_template('newcountry.html')
+
+
 @app.route('/countries/<int:country_id>/<int:attraction_id>/')
 def show_attraction(country_id, attraction_id):
     country = session.query(Country).filter_by(id=country_id).one()
@@ -60,7 +96,7 @@ def show_attraction(country_id, attraction_id):
                            attraction=attraction)
 
 
-@app.route('/countries/<int:country_id>/<int:attraction_id>/edit',
+@app.route('/countries/<int:country_id>/<int:attraction_id>/edit/',
            methods=['GET', 'POST'])
 def edit_attraction(country_id, attraction_id):
     attraction = session.query(Attraction).filter_by(id=attraction_id).one()
@@ -84,6 +120,48 @@ def edit_attraction(country_id, attraction_id):
 
     return render_template('editattraction.html', attraction=attraction,
                            country=country, countries=countries)
+
+
+@app.route('/countries/<int:country_id>/<int:attraction_id>/delete/',
+           methods=['GET', 'POST'])
+def delete_attraction(country_id, attraction_id):
+    attraction = session.query(Attraction).filter_by(id=attraction_id).one()
+    country = session.query(Country).filter_by(id=country_id).one()
+
+    if request.method == 'POST':
+        attraction = session.query(Attraction).filter_by(
+            id=attraction_id).one()
+        session.delete(attraction)
+
+        return redirect(url_for('show_country', country_id=country_id))
+
+    return render_template('deleteattraction.html', attraction=attraction,
+                           country=country)
+
+
+@app.route('/countries/<int:country_id>/new/', methods=['GET', 'POST'])
+def new_attraction(country_id):
+    country = session.query(Country).filter_by(id=country_id).one()
+
+    if request.method == 'POST':
+        inputs = request.form
+        attraction = Attraction()
+
+        if inputs['name']:
+            attraction.name = inputs['name']
+        if inputs['city']:
+            attraction.city = inputs['city']
+        if inputs['description']:
+            attraction.description = inputs['description']
+
+        attraction.country = country
+
+        session.add(attraction)
+        session.commit()
+
+        return redirect(url_for('show_country', country_id=country_id))
+
+    return render_template('newattraction.html', country=country)
 
 
 if __name__ == '__main__':

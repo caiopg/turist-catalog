@@ -12,7 +12,8 @@
         </header>
         <section>
             <h2>Countries</h2>
-
+            <a href="{{url_for('new_country')}}">Add</a>
+            <br>
             {% for c in countries %}
             <a href="{{url_for('show_country', country_id=c.id)}}">{{c.name}}</a>
             <br>
