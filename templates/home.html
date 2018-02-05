@@ -4,11 +4,50 @@
         <title>Tourist Catalog</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="//apis.google.com/js/platform.js?onload=start"></script>
     </head>
 
     <body>
         <header>
             <h1>Tourist Catalog</h1>
+            <div id="sign-in-button">
+                <span class="g-signin"
+                      data-scope="openid email"
+                      data-clientid="1025442989078-1g1g3sk9qdg2860cu14dr8h180vecqer.apps.googleusercontent.com"
+                      data-redirecturi="postmessage"
+                      data-accesstype="offline"
+                      data-cookiepolicy="single_host_origin"
+                      data-callback="signInCallback"
+                      data-approvalprompt="force">
+                </span>
+            </div>
+            <script>
+                function signInCallback(authResult) {
+                    if (authResult['code']) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/gconnect?state={{state}}',
+                            processData: false,
+                            data: authResult['code'],
+                            contentType: 'application/octet-stream; charset=utf-8',
+                            success: function(result) {
+                                if (authResult['status']['signed_in']) {
+                                    $('#sign-in-button').attr('style', 'display: none');
+                                    $('#sign-out-button').attr('style', 'display: block');
+                                } else if (authResult['error']) {
+                                    console.log('There was an error: ' + authResult['error']);
+                                } else {
+                                    alert("Failed to login")
+                                }
+                            }
+                        });
+                    }
+                }
+            </script>
+            <div id="sign-out-button" style="display: none;">
+                <a href="{{url_for('home')}}">Logout</a>
+            </div>
         </header>
         <section>
             <h2>Countries</h2>

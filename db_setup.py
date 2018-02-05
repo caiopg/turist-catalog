@@ -14,6 +14,14 @@ class Country(Base):
     name = Column(String(250), nullable=False)
     description = Column(String(250))
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description
+        }
+
 
 class Attraction(Base):
     __tablename__ = 'attraction'
@@ -24,6 +32,16 @@ class Attraction(Base):
     description = Column(String(250))
     country_id = Column(Integer, ForeignKey('country.id'))
     country = relationship(Country)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'description': self.description,
+            'country': self.country_id
+        }
 
 
 engine = create_engine(DB_PATH)
