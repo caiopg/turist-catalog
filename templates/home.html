@@ -33,26 +33,22 @@
                             contentType: 'application/octet-stream; charset=utf-8',
                             success: function(result) {
                                 if (authResult['status']['signed_in']) {
-                                    $('#sign-in-button').attr('style', 'display: none');
-                                    $('#sign-out-button').attr('style', 'display: block');
-                                } else if (authResult['error']) {
-                                    console.log('There was an error: ' + authResult['error']);
-                                } else {
-                                    alert("Failed to login")
+                                    window.location.href = "/";
+                                } else  {
+                                    if (authResult['error']) {
+                                        console.log('There was an error: ' + authResult['error']);
+                                    }
+                                    alert("Failed to login");
                                 }
                             }
                         });
                     }
                 }
             </script>
-            <div id="sign-out-button" style="display: none;">
-                <a href="{{url_for('home')}}">Logout</a>
-            </div>
         </header>
         <section>
             <h2>Countries</h2>
-            <a href="{{url_for('new_country')}}">Add</a>
-            <br>
+
             {% for c in countries %}
             <a href="{{url_for('show_country', country_id=c.id)}}">{{c.name}}</a>
             <br>

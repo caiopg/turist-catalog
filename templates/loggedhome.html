@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tourist Catalog</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+
+    <body>
+        <header>
+            <h1>Tourist Catalog</h1>
+            <a href="{{url_for('gdisconnect')}}">Logout</a>
+        </header>
+        <section>
+            <h2>Countries</h2>
+            <a href="{{url_for('new_country')}}">Add</a>
+            <br>
+
+            {% for c in countries %}
+            <a href="{{url_for('show_country', country_id=c.id)}}">{{c.name}}</a>
+            <br>
+            {% endfor %}
+
+        </section>
+    </body>
+</html>
