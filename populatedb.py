@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db_setup import DB_PATH, Base, Country, Attraction
+from dbsetup import DB_PATH, Base, Country, Attraction, User
 
 engine = create_engine(DB_PATH)
 Base.metadata.bind = engine
@@ -9,7 +9,14 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+admin = User(
+    name='Bilbo Baggins',
+    email="bilbo.baggins@precious.com")
+
+session.add(admin)
+
 brazil = Country(
+    user=admin,
     name="Brazil",
     description="Brazil, officially the Federative Republic of Brazil, "
                 "is the largest country in both South America and Latin "
@@ -34,6 +41,7 @@ brazil = Country(
 session.add(brazil)
 
 sugar_loaf = Attraction(
+    user=admin,
     name="Sugar Loaf Mountain",
     city="Rio de Janeiro",
     description="Sugarloaf Mountain is a peak situated in Rio de Janeiro, "
@@ -48,6 +56,7 @@ sugar_loaf = Attraction(
 session.add(sugar_loaf)
 
 christ_redeemer = Attraction(
+    user=admin,
     name="Christ the Redeemer",
     city="Rio de Janeiro",
     description="Christ the Redeemer is an Art Deco statue of Jesus Christ "
@@ -63,6 +72,7 @@ christ_redeemer = Attraction(
 session.add(christ_redeemer)
 
 ibirapuera = Attraction(
+    user=admin,
     name="Ibirapuera Park",
     city="São Paulo",
     description="Ibirapuera Park (Portuguese: Parque Ibirapuera) is a major "
@@ -79,6 +89,7 @@ ibirapuera = Attraction(
 session.add(ibirapuera)
 
 france = Country(
+    user=admin,
     name="France",
     description="France, officially the French Republic (French: République "
                 "française, pronounced [ʁepyblik fʁɑ̃sɛz]), is a country "
@@ -101,6 +112,7 @@ france = Country(
 session.add(france)
 
 eiffel_tower = Attraction(
+    user=admin,
     name="Eiffel Tower",
     city="Paris",
     description="The Eiffel Tower is a wrought iron lattice tower on the "
@@ -118,6 +130,7 @@ eiffel_tower = Attraction(
 session.add(eiffel_tower)
 
 louvre = Attraction(
+    user=admin,
     name="Louvre",
     city="Paris",
     description="The Louvre, is the world's largest art museum and a "
@@ -134,6 +147,7 @@ louvre = Attraction(
 session.add(louvre)
 
 usa = Country(
+    user=admin,
     name="United States of America",
     description="The United States of America (USA), commonly known as the "
                 "United States (U.S.) or America, is a federal republic "
@@ -159,6 +173,7 @@ usa = Country(
 session.add(usa)
 
 statue_liberty = Attraction(
+    user=admin,
     name="Statue of Liberty",
     city="New York City",
     description="The Statue of Liberty (Liberty Enlightening the World; "
@@ -174,6 +189,7 @@ statue_liberty = Attraction(
 session.add(statue_liberty)
 
 golden_gate_bridge = Attraction(
+    user=admin,
     name="Golden Gate Bridge",
     city="San Francisco",
     description="The Golden Gate Bridge is a suspension bridge spanning the "
@@ -192,6 +208,7 @@ golden_gate_bridge = Attraction(
 session.add(golden_gate_bridge)
 
 greece = Country(
+    user=admin,
     name="Greece",
     description="Greece is located at the crossroads of Europe, Asia, "
                 "and Africa. Situated on the southern tip of the Balkan "
@@ -214,6 +231,7 @@ greece = Country(
 session.add(greece)
 
 parthenon = Attraction(
+    user=admin,
     name="Parthenon",
     city="Athens",
     description="The Parthenon is a former temple, on the Athenian "
@@ -234,6 +252,7 @@ parthenon = Attraction(
 session.add(parthenon)
 
 germany = Country(
+    user=admin,
     name="Germany",
     description="Germany, officially the Federal Republic of Germany is a "
                 "federal parliamentary republic in central-western Europe. "
@@ -253,6 +272,7 @@ germany = Country(
 session.add(germany)
 
 berlin_wall = Attraction(
+    user=admin,
     name="Berlin Wall",
     city="Berlin",
     description="The Berlin Wall (German: Berliner Mauer) was a guarded "
@@ -272,6 +292,7 @@ berlin_wall = Attraction(
 session.add(berlin_wall)
 
 brandenburg_gate = Attraction(
+    user=admin,
     name="Brandenburg Gate",
     city="Berlin",
     description="The Brandenburg Gate (German: Brandenburger Tor) is an "
@@ -288,6 +309,7 @@ brandenburg_gate = Attraction(
 session.add(brandenburg_gate)
 
 india = Country(
+    user=admin,
     name="India",
     description="India, officially the Republic of India (Bhārat Gaṇarājya),"
                 "[e] is a country in South Asia. It is the seventh-largest "
@@ -305,6 +327,7 @@ india = Country(
 session.add(india)
 
 taj_mahal = Attraction(
+    user=admin,
     name="Taj Mahal",
     city="Agra",
     description="The Taj Mahal is an ivory-white marble mausoleum on the "
@@ -321,6 +344,7 @@ taj_mahal = Attraction(
 session.add(taj_mahal)
 
 england = Country(
+    user=admin,
     name="England",
     description="England is a country that is part of the United Kingdom. It "
                 "shares land borders with Scotland to the north and Wales to "
@@ -336,6 +360,7 @@ england = Country(
 session.add(england)
 
 big_ben = Attraction(
+    user=admin,
     name="Big Ben",
     city="London",
     description="Big Ben is the nickname for the Great Bell of the clock at "
@@ -349,6 +374,7 @@ big_ben = Attraction(
 session.add(big_ben)
 
 italy = Country(
+    user=admin,
     name="Italy",
     description="Italy, officially the Italian Republic (Italian: Repubblica "
                 "italiana), is a unitary parliamentary republic in Europe. "
@@ -362,6 +388,7 @@ italy = Country(
 session.add(italy)
 
 coliseum = Attraction(
+    user=admin,
     name="Coliseum",
     city="Rome",
     description="The Colosseum or Coliseum, also known as the Flavian "
@@ -380,6 +407,7 @@ coliseum = Attraction(
 session.add(coliseum)
 
 japan = Country(
+    user=admin,
     name="Japan",
     description="Japan is a sovereign island nation in East Asia. Located in "
                 "the Pacific Ocean, it lies off the eastern coast of the "
@@ -399,6 +427,7 @@ japan = Country(
 session.add(japan)
 
 tokyo_tower = Attraction(
+    user=admin,
     name="Tokyo Tower",
     city="Tokyo",
     description="Tokyo Tower is a communications and observation tower in "

@@ -6,28 +6,23 @@ import requests
 from flask import Flask, render_template, request, url_for, jsonify, \
     session as login_session, json, make_response
 from oauth2client.client import FlowExchangeError, flow_from_clientsecrets
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from werkzeug.utils import redirect
 
-from db_setup import Base, DB_PATH, Country, Attraction
+import dbhelper
+from dbsetup import Country, Attraction, User
 
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web'][
     'client_id']
 
-engine = create_engine(DB_PATH)
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+db_helper = dbhelper.DbHelper()
 
 
 @app.route('/')
 @app.route('/countries/')
 def home():
-    countries = session.query(Country)
+    countries = db_helper.get_countries()
 
     stored_access_token = login_session.get('access_token')
     if stored_access_token is not None:
@@ -145,17 +140,23 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['email'] = data['email']
 
+    user_id = get_user_id(data['email'])
+    if user_id is None:
+        user_id = create_user(name=data['name'], email=data['email'])
+
+    login_session['user_id'] = user_id
+
     return ''
 
 
 @app.route('/countries/<int:country_id>/')
 def show_country(country_id):
-    country = session.query(Country).filter_by(id=country_id).one()
-    attractions = session.query(Attraction).filter_by(
-        country_id=country_id).all()
+    country = db_helper.get_country_by_id(country_id)
+    attractions = db_helper.get_attractions(country_id)
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is not None:
+    if stored_access_token is not None and country.user_id == \
+            login_session['user_id']:
         return render_template('loggedcountry.html', country=country,
                                attractions=attractions)
 
@@ -165,9 +166,8 @@ def show_country(country_id):
 
 @app.route('/countries/<int:country_id>/json/')
 def country_json(country_id):
-    country = session.query(Country).filter_by(id=country_id).one()
-    attractions = session.query(Attraction).filter_by(
-        country_id=country_id).all()
+    country = db_helper.get_country_by_id(country_id)
+    attractions = db_helper.get_attractions(country_id)
 
     return jsonify(Country=country.serialize,
                    Attractions=[a.serialize for a in attractions])
@@ -176,10 +176,11 @@ def country_json(country_id):
 @app.route('/countries/<int:country_id>/edit/',
            methods=['GET', 'POST'])
 def edit_country(country_id):
-    country = session.query(Country).filter_by(id=country_id).one()
+    country = db_helper.get_country_by_id(country_id)
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is None:
+    if stored_access_token is None or country.user_id != \
+            login_session['user_id']:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
@@ -189,8 +190,7 @@ def edit_country(country_id):
         if inputs['description']:
             country.description = inputs['description']
 
-        session.add(country)
-        session.commit()
+        db_helper.add_to_db(country)
 
         return redirect(url_for('show_country', country_id=country_id))
 
@@ -199,18 +199,16 @@ def edit_country(country_id):
 
 @app.route('/countries/<int:country_id>/delete/', methods=['GET', 'POST'])
 def delete_country(country_id):
-    country = session.query(Country).filter_by(id=country_id).one()
+    country = db_helper.get_country_by_id(country_id)
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is None:
+    if stored_access_token is None or country.user_id != \
+            login_session['user_id']:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
-        session.query(Attraction).filter_by(
-            country_id=country_id).delete()
-
-        session.delete(country)
-        session.commit()
+        db_helper.delete_attractions_by_country_id(country_id)
+        db_helper.delete_from_database(country)
 
         return redirect(url_for('home'))
 
@@ -226,14 +224,14 @@ def new_country():
     if request.method == 'POST':
         inputs = request.form
         country = Country()
+        country.user_id = login_session['user_id']
 
         if inputs['name']:
             country.name = inputs['name']
         if inputs['description']:
             country.description = inputs['description']
 
-        session.add(country)
-        session.commit()
+        db_helper.add_to_db(country)
 
         return redirect(url_for('home'))
 
@@ -242,11 +240,12 @@ def new_country():
 
 @app.route('/countries/<int:country_id>/<int:attraction_id>/')
 def show_attraction(country_id, attraction_id):
-    country = session.query(Country).filter_by(id=country_id).one()
-    attraction = session.query(Attraction).filter_by(id=attraction_id).one()
+    country = db_helper.get_country_by_id(country_id)
+    attraction = db_helper.get_attraction_by_id(attraction_id)
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is not None:
+    if stored_access_token is not None and attraction.user_id == \
+            login_session['user_id']:
         return render_template('loggedattraction.html', country=country,
                                attraction=attraction)
 
@@ -257,12 +256,13 @@ def show_attraction(country_id, attraction_id):
 @app.route('/countries/<int:country_id>/<int:attraction_id>/edit/',
            methods=['GET', 'POST'])
 def edit_attraction(country_id, attraction_id):
-    attraction = session.query(Attraction).filter_by(id=attraction_id).one()
-    country = session.query(Country).filter_by(id=country_id).one()
-    countries = session.query(Country)
+    attraction = db_helper.get_attraction_by_id(attraction_id)
+    country = db_helper.get_country_by_id(country_id)
+    countries = db_helper.get_countries()
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is None:
+    if stored_access_token is None or attraction.user_id != \
+            login_session['user_id']:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
@@ -274,8 +274,7 @@ def edit_attraction(country_id, attraction_id):
         if inputs['description']:
             attraction.description = inputs['description']
 
-        session.add(attraction)
-        session.commit()
+        db_helper.add_to_db(attraction)
 
         return redirect(url_for('show_attraction', country_id=country_id,
                                 attraction_id=attraction_id))
@@ -287,17 +286,16 @@ def edit_attraction(country_id, attraction_id):
 @app.route('/countries/<int:country_id>/<int:attraction_id>/delete/',
            methods=['GET', 'POST'])
 def delete_attraction(country_id, attraction_id):
-    attraction = session.query(Attraction).filter_by(id=attraction_id).one()
-    country = session.query(Country).filter_by(id=country_id).one()
+    attraction = db_helper.get_attraction_by_id(attraction_id)
+    country = db_helper.get_country_by_id(country_id)
 
     stored_access_token = login_session.get('access_token')
-    if stored_access_token is None:
+    if stored_access_token is None or attraction.user_id != \
+            login_session['user_id']:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
-        attraction = session.query(Attraction).filter_by(
-            id=attraction_id).one()
-        session.delete(attraction)
+        db_helper.delete_from_database(attraction)
 
         return redirect(url_for('show_country', country_id=country_id))
 
@@ -307,7 +305,7 @@ def delete_attraction(country_id, attraction_id):
 
 @app.route('/countries/<int:country_id>/new/', methods=['GET', 'POST'])
 def new_attraction(country_id):
-    country = session.query(Country).filter_by(id=country_id).one()
+    country = db_helper.get_country_by_id(country_id)
 
     stored_access_token = login_session.get('access_token')
     if stored_access_token is None:
@@ -316,6 +314,7 @@ def new_attraction(country_id):
     if request.method == 'POST':
         inputs = request.form
         attraction = Attraction()
+        attraction.user_id = login_session['user_id']
 
         if inputs['name']:
             attraction.name = inputs['name']
@@ -326,12 +325,28 @@ def new_attraction(country_id):
 
         attraction.country = country
 
-        session.add(attraction)
-        session.commit()
+        db_helper.add_to_db(attraction)
 
         return redirect(url_for('show_country', country_id=country_id))
 
     return render_template('newattraction.html', country=country)
+
+
+def create_user(name, email):
+    new_user = User(name=name, email=email)
+    db_helper.add_to_db(new_user)
+
+    user = db_helper.get_user_by_email(email)
+
+    return user.id
+
+
+def get_user_id(email):
+    try:
+        user = db_helper.get_user_by_email(email)
+        return user
+    except:
+        return None
 
 
 if __name__ == '__main__':

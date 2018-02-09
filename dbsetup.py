@@ -7,12 +7,22 @@ DB_PATH = 'sqlite:///touristcatalog.db'
 Base = declarative_base()
 
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+
+
 class Country(Base):
     __tablename__ = 'country'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     description = Column(String(250))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -32,6 +42,8 @@ class Attraction(Base):
     description = Column(String(250))
     country_id = Column(Integer, ForeignKey('country.id'))
     country = relationship(Country)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
