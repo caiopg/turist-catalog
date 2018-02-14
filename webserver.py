@@ -342,11 +342,8 @@ def create_user(name, email):
 
 
 def get_user_id(email):
-    try:
-        user = db_helper.get_user_by_email(email)
-        return user
-    except:
-        return None
+    user = db_helper.get_user_by_email(email)
+    return user
 
 
 if __name__ == '__main__':

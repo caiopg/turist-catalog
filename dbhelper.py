@@ -17,14 +17,15 @@ class DbHelper:
         return self.session.query(Country)
 
     def get_country_by_id(self, country_id):
-        return self.session.query(Country).filter_by(id=country_id).one()
+        return self.session.query(Country).filter_by(id=country_id).first()
 
     def get_attractions(self, country_id):
         return self.session.query(Attraction).filter_by(
             country_id=country_id).all()
 
     def get_attraction_by_id(self, attraction_id):
-        return self.session.query(Attraction).filter_by(id=attraction_id).one()
+        return self.session.query(Attraction).filter_by(id=attraction_id)\
+            .first()
 
     def add_to_db(self, element):
         self.session.add(element)
@@ -40,4 +41,4 @@ class DbHelper:
         self.session.commit()
 
     def get_user_by_email(self, email):
-        return self.session.query(User).filter_by(email=email).one()
+        return self.session.query(User).filter_by(email=email).first()
