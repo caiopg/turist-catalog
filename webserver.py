@@ -11,12 +11,18 @@ from werkzeug.utils import redirect
 import dbhelper
 from dbsetup import Country, Attraction, User
 
+'''webserver is responsible for initiating Flask. It is also responsible
+for retreiving the correct html pages, populating them with the correct
+elements and serving the browser.'''
+
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web'][
     'client_id']
 
 db_helper = dbhelper.DbHelper()
+
+'''home() serves the homepage. Template changes if user is logged or not.'''
 
 
 @app.route('/')
@@ -38,6 +44,9 @@ def home():
                            state=login_session['state'])
 
 
+'''gdisconnect() disconnects the user from google service.'''
+
+
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -48,11 +57,14 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    # Call the google url responsible for invalidating the token.
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
           login_session['access_token']
     web = httplib2.Http()
     result = web.request(url, 'GET')[0]
 
+    # Remove all information if url call is successful. Show error if
+    # unsuccessful,
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
@@ -65,6 +77,9 @@ def gdisconnect():
             json.dumps('Failed to revoke token for given user.'))
         response.headers['Content-Type'] = 'application/json'
         return response
+
+
+'''gconnect() connects the user through the google service.'''
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -140,13 +155,19 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['email'] = data['email']
 
-    user_id = get_user_id(data['email'])
-    if user_id is None:
+    user = db_helper.get_user_by_email(data['email'])
+    if user is None:
         user_id = create_user(name=data['name'], email=data['email'])
+    else:
+        user_id = user.id
 
     login_session['user_id'] = user_id
 
     return ''
+
+
+'''show_country() serves the page of a specific country. Template will
+change if user is logged or not.'''
 
 
 @app.route('/countries/<int:country_id>/')
@@ -164,6 +185,10 @@ def show_country(country_id):
                            attractions=attractions)
 
 
+'''country_json() returns all the information associated to a specific
+country in a json format. '''
+
+
 @app.route('/countries/<int:country_id>/json/')
 def country_json(country_id):
     country = db_helper.get_country_by_id(country_id)
@@ -171,6 +196,10 @@ def country_json(country_id):
 
     return jsonify(Country=country.serialize,
                    Attractions=[a.serialize for a in attractions])
+
+
+'''edit_country() serves the page which lets the user edit a country. If
+user is not logged, user will be redirected to homepage. '''
 
 
 @app.route('/countries/<int:country_id>/edit/',
@@ -197,6 +226,10 @@ def edit_country(country_id):
     return render_template('editcountry.html', country=country)
 
 
+'''delete_country() serves the page which lets the user remove a country. If
+user is not logged, user will be redirected to homepage. '''
+
+
 @app.route('/countries/<int:country_id>/delete/', methods=['GET', 'POST'])
 def delete_country(country_id):
     country = db_helper.get_country_by_id(country_id)
@@ -213,6 +246,10 @@ def delete_country(country_id):
         return redirect(url_for('home'))
 
     return render_template('deletecountry.html', country=country)
+
+
+'''new_country() serves the page which lets the user create a country. If
+user is not logged, user will be redirected to homepage. '''
 
 
 @app.route('/countries/new', methods=['GET', 'POST'])
@@ -238,6 +275,10 @@ def new_country():
     return render_template('newcountry.html')
 
 
+'''show_attraction() serves the page of a specific attraction. Template will
+change if user is looged or not. '''
+
+
 @app.route('/countries/<int:country_id>/<int:attraction_id>/')
 def show_attraction(country_id, attraction_id):
     country = db_helper.get_country_by_id(country_id)
@@ -251,6 +292,10 @@ def show_attraction(country_id, attraction_id):
 
     return render_template('attraction.html', country=country,
                            attraction=attraction)
+
+
+'''edit_attraction() serves the page which lets the user edit an attraction. If
+user is not logged, user will be redirected to homepage. '''
 
 
 @app.route('/countries/<int:country_id>/<int:attraction_id>/edit/',
@@ -283,6 +328,10 @@ def edit_attraction(country_id, attraction_id):
                            country=country, countries=countries)
 
 
+'''delete_attraction() serves the page which lets the user remove an
+attraction. If user is not logged, user will be redirected to homepage. '''
+
+
 @app.route('/countries/<int:country_id>/<int:attraction_id>/delete/',
            methods=['GET', 'POST'])
 def delete_attraction(country_id, attraction_id):
@@ -301,6 +350,10 @@ def delete_attraction(country_id, attraction_id):
 
     return render_template('deleteattraction.html', attraction=attraction,
                            country=country)
+
+
+'''new_attraction() serves the page which lets the user create an
+attraction. If user is not logged, user will be redirected to homepage. '''
 
 
 @app.route('/countries/<int:country_id>/new/', methods=['GET', 'POST'])
@@ -332,6 +385,10 @@ def new_attraction(country_id):
     return render_template('newattraction.html', country=country)
 
 
+'''create_user() is responsible for creating a new user and adding to
+database. '''
+
+
 def create_user(name, email):
     new_user = User(name=name, email=email)
     db_helper.add_to_db(new_user)
@@ -339,11 +396,6 @@ def create_user(name, email):
     user = db_helper.get_user_by_email(email)
 
     return user.id
-
-
-def get_user_id(email):
-    user = db_helper.get_user_by_email(email)
-    return user
 
 
 if __name__ == '__main__':

@@ -2,9 +2,15 @@ from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+''' dbsetup is used to prepare the database. All of the necessary config
+classes and methods can be found here and should be kept here.
+'''
+
 DB_PATH = 'sqlite:///touristcatalog.db'
 
 Base = declarative_base()
+
+'''This class represents a user. A user has an ID, a name and an e-mail.'''
 
 
 class User(Base):
@@ -13,6 +19,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
+
+
+'''This class represents a country. A country has an ID, a name,
+a description and a user who created it in the database.'''
 
 
 class Country(Base):
@@ -31,6 +41,11 @@ class Country(Base):
             'name': self.name,
             'description': self.description
         }
+
+
+'''This class represents an attraction. An attraction has an ID, a name,
+a city, a descripton, a country where it is located and a user who created
+it in the database.'''
 
 
 class Attraction(Base):

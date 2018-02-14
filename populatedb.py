@@ -3,18 +3,25 @@ from sqlalchemy.orm import sessionmaker
 
 from dbsetup import DB_PATH, Base, Country, Attraction, User
 
+''' populatedb is used to populate the db with some information related to
+countries and their attraction points.
+'''
+
 engine = create_engine(DB_PATH)
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# Create the admin user. All countries and attractions created here will be
+# associated with him.
 admin = User(
     name='Bilbo Baggins',
     email="bilbo.baggins@precious.com")
 
 session.add(admin)
 
+# Create Brazil.
 brazil = Country(
     user=admin,
     name="Brazil",
@@ -40,6 +47,7 @@ brazil = Country(
 
 session.add(brazil)
 
+# Create Sugar Loaf and associate with Brazil.
 sugar_loaf = Attraction(
     user=admin,
     name="Sugar Loaf Mountain",
@@ -55,6 +63,7 @@ sugar_loaf = Attraction(
 
 session.add(sugar_loaf)
 
+# Create Christ The Redeemer and associate with Brazil.
 christ_redeemer = Attraction(
     user=admin,
     name="Christ the Redeemer",
@@ -71,6 +80,7 @@ christ_redeemer = Attraction(
 
 session.add(christ_redeemer)
 
+# Create Ibirapuera Park and associate with Brazil.
 ibirapuera = Attraction(
     user=admin,
     name="Ibirapuera Park",
@@ -88,6 +98,7 @@ ibirapuera = Attraction(
 
 session.add(ibirapuera)
 
+# Create France.
 france = Country(
     user=admin,
     name="France",
@@ -111,6 +122,7 @@ france = Country(
 
 session.add(france)
 
+# Create Eiffel Tower and associate it with France.
 eiffel_tower = Attraction(
     user=admin,
     name="Eiffel Tower",
@@ -129,6 +141,7 @@ eiffel_tower = Attraction(
 
 session.add(eiffel_tower)
 
+# Create Louvre and associate it with France.
 louvre = Attraction(
     user=admin,
     name="Louvre",
@@ -146,6 +159,7 @@ louvre = Attraction(
 
 session.add(louvre)
 
+# Create the U.S.A.
 usa = Country(
     user=admin,
     name="United States of America",
@@ -172,6 +186,7 @@ usa = Country(
 
 session.add(usa)
 
+# Create the Statue of Liberty and associate it with the U.S.A.
 statue_liberty = Attraction(
     user=admin,
     name="Statue of Liberty",
@@ -188,6 +203,7 @@ statue_liberty = Attraction(
 
 session.add(statue_liberty)
 
+# Create the Golden Gate Bridge and associate it with the U.S.A.
 golden_gate_bridge = Attraction(
     user=admin,
     name="Golden Gate Bridge",
@@ -207,6 +223,7 @@ golden_gate_bridge = Attraction(
 
 session.add(golden_gate_bridge)
 
+# Create Greece.
 greece = Country(
     user=admin,
     name="Greece",
@@ -230,6 +247,7 @@ greece = Country(
 
 session.add(greece)
 
+# Create the Parthenon and associate it with Greece.
 parthenon = Attraction(
     user=admin,
     name="Parthenon",
@@ -251,6 +269,7 @@ parthenon = Attraction(
 
 session.add(parthenon)
 
+# Create Germany.
 germany = Country(
     user=admin,
     name="Germany",
@@ -271,6 +290,7 @@ germany = Country(
 
 session.add(germany)
 
+# Create the Berlin Wall and associate it with Germany.
 berlin_wall = Attraction(
     user=admin,
     name="Berlin Wall",
@@ -291,6 +311,7 @@ berlin_wall = Attraction(
 
 session.add(berlin_wall)
 
+# Create the Brandenburg Gate and associate it with Germany.
 brandenburg_gate = Attraction(
     user=admin,
     name="Brandenburg Gate",
@@ -308,6 +329,7 @@ brandenburg_gate = Attraction(
 
 session.add(brandenburg_gate)
 
+# Create India.
 india = Country(
     user=admin,
     name="India",
@@ -326,6 +348,7 @@ india = Country(
 
 session.add(india)
 
+# Create the Taj Mahal and associate it with India.
 taj_mahal = Attraction(
     user=admin,
     name="Taj Mahal",
@@ -343,6 +366,7 @@ taj_mahal = Attraction(
 
 session.add(taj_mahal)
 
+# Create England.
 england = Country(
     user=admin,
     name="England",
@@ -359,6 +383,7 @@ england = Country(
 
 session.add(england)
 
+# Create the Big Ben and associate it with England.
 big_ben = Attraction(
     user=admin,
     name="Big Ben",
@@ -373,6 +398,7 @@ big_ben = Attraction(
 
 session.add(big_ben)
 
+# Create Italy.
 italy = Country(
     user=admin,
     name="Italy",
@@ -387,6 +413,7 @@ italy = Country(
 
 session.add(italy)
 
+# Create the Coliseum and associate it with Italy.
 coliseum = Attraction(
     user=admin,
     name="Coliseum",
@@ -406,6 +433,7 @@ coliseum = Attraction(
 
 session.add(coliseum)
 
+# Create Japan.
 japan = Country(
     user=admin,
     name="Japan",
@@ -426,6 +454,7 @@ japan = Country(
 
 session.add(japan)
 
+# Create Tokyo Tower and associate it with Japan.
 tokyo_tower = Attraction(
     user=admin,
     name="Tokyo Tower",
