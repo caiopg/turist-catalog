@@ -1,0 +1,21 @@
+body {
+  background-color: #41f4a0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h2 {
+  margin-left: 5px;
+}
+
+h3 {
+  margin-left: 5px;
+}
+
+p, a {
+  margin-left: 10px;
+}
