@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
         <script src="//apis.google.com/js/platform.js?onload=start"></script>
-        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}"
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
     </head>
 
     <body>
@@ -51,7 +51,7 @@
             <h2>Countries</h2>
 
             {% for c in countries %}
-            <a href="{{url_for('show_country', country_id=c.id)}}">{{c.name}}</a>
+            <a href="{{url_for('country.show_country', country_id=c.id)}}">{{c.name}}</a>
             <br>
             {% endfor %}
 

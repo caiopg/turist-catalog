@@ -1,21 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from model import DBSession
+from model.attraction import Attraction
+from model.country import Country
+from model.user import User
 
-from dbsetup import Base, DB_PATH, Country, Attraction, User
-
-''' dbhelper is used to interface with the database. All interaction
+"""
+dbhelper is used to interface with the database. All interaction
 with the database should be done through it.
-'''
+"""
 
 
 class DbHelper:
 
     def __init__(self):
-        engine = create_engine(DB_PATH)
-        Base.metadata.bind = engine
-
-        db_session = sessionmaker(bind=engine)
-        self.session = db_session()
+        self.session = DBSession()
 
     # Method retrieves all countries from database.
     def get_countries(self):

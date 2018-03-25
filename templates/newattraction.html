@@ -3,7 +3,7 @@
 
     <section>
         <h2>Edit Attraction</h2>
-        <form action="{{url_for('new_attraction', country_id=country.id)}}" method="post">
+        <form action="{{url_for('attraction.new_attraction', country_id=country.id)}}" method="post">
             <p>Name:</p>
             <input type="text" size="30" name="name" required="required">
             <p>City:</p>
@@ -14,7 +14,7 @@
             <br>
             <input type="submit" value="Confirm">
             <br>
-            <a href="{{url_for('show_country', country_id=country.id)}}">Cancel</a>
+            <a href="{{url_for('country.show_country', country_id=country.id)}}">Cancel</a>
         </form>
     </section>
 

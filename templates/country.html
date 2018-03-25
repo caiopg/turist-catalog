@@ -6,7 +6,7 @@
         <h2>Attractions</h2>
 
         {% for a in attractions %}
-        <a href="{{url_for('show_attraction', country_id=country.id, attraction_id=a.id)}}">{{a.name}}</a>
+        <a href="{{url_for('attraction.show_attraction', country_id=country.id, attraction_id=a.id)}}">{{a.name}}</a>
         <br>
         {% endfor %}
 

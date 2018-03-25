@@ -1,20 +1,17 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from dbsetup import DB_PATH, Base, Country, Attraction, User
+from model import DBSession
+from model.attraction import Attraction
+from model.country import Country
+from model.user import User
 
 ''' populatedb is used to populate the db with some information related to
 countries and their attraction points.
 '''
 
-engine = create_engine(DB_PATH)
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
-
 # Create the admin user. All countries and attractions created here will be
 # associated with him.
+
+session = DBSession()
+
 admin = User(
     name='Bilbo Baggins',
     email="bilbo.baggins@precious.com")

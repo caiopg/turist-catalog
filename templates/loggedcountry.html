@@ -3,14 +3,14 @@
 
     <section>
         <h2>{{country.name}}</h2>
-        <a href="{{url_for('edit_country', country_id=country.id)}}">Edit</a>
+        <a href="{{url_for('country.edit_country', country_id=country.id)}}">Edit</a>
         <p>{{country.description}}</p>
         <h2>Attractions</h2>
-        <a href="{{url_for('new_attraction', country_id=country.id)}}">Add</a>
+        <a href="{{url_for('attraction.new_attraction', country_id=country.id)}}">Add</a>
         <br>
 
         {% for a in attractions %}
-        <a href="{{url_for('show_attraction', country_id=country.id, attraction_id=a.id)}}">{{a.name}}</a>
+        <a href="{{url_for('attraction.show_attraction', country_id=country.id, attraction_id=a.id)}}">{{a.name}}</a>
         <br>
         {% endfor %}
     </section>

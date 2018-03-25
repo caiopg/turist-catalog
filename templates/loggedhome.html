@@ -10,15 +10,15 @@
     <body>
         <header>
             <h1>Tourist Catalog</h1>
-            <a href="{{url_for('gdisconnect')}}">Logout</a>
+            <a href="{{url_for('google.gdisconnect')}}">Logout</a>
         </header>
         <section>
             <h2>Countries</h2>
-            <a href="{{url_for('new_country')}}">Add</a>
+            <a href="{{url_for('country.new_country')}}">Add</a>
             <br>
 
             {% for c in countries %}
-            <a href="{{url_for('show_country', country_id=c.id)}}">{{c.name}}</a>
+            <a href="{{url_for('country.show_country', country_id=c.id)}}">{{c.name}}</a>
             <br>
             {% endfor %}
 

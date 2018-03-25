@@ -4,10 +4,10 @@
     <section>
         <h2>Delete {{attraction.name}}</h2>
         <h3>Are you sure you want to delete {{attraction.name}}</h3>
-        <form action="{{url_for('delete_attraction', attraction_id=attraction.id, country_id=country.id)}}" method="post">
+        <form action="{{url_for('attraction.delete_attraction', attraction_id=attraction.id, country_id=country.id)}}" method="post">
             <input type="submit" value="Confirm">
             <br>
-            <a href="{{url_for('show_attraction', country_id=country.id, attraction_id=attraction.id)}}">Cancel</a>
+            <a href="{{url_for('attraction.show_attraction', country_id=country.id, attraction_id=attraction.id)}}">Cancel</a>
         </form>
     </section>
 

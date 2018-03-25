@@ -3,7 +3,7 @@
 
     <section>
         <h2>{{attraction.name}}</h2>
-        <a href="{{url_for('edit_attraction', country_id=country.id, attraction_id=attraction.id)}}">Edit</a>
+        <a href="{{url_for('attraction.edit_attraction', country_id=country.id, attraction_id=attraction.id)}}">Edit</a>
         <h3>{{attraction.city}}</h3>
         <p>{{attraction.description}}</p>
     </section>
