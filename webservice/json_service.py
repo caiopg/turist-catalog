@@ -24,7 +24,7 @@ def country_json(country_id):
                    Attractions=[a.serialize for a in attractions])
 
 
-@json_service.route('/countries/<int:attraction_id>/json/')
+@json_service.route('/attractions/<int:attraction_id>/json/')
 def attraction_json(attraction_id):
     """
     attraction_json() returns all the information associated to a specific
